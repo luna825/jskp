@@ -9,7 +9,7 @@ def get_oauth_nonce():
 	'''
 	global count
 	count += 1
-	return str(time.time() + 1).replace(".","")
+	return str(time.time()/2).replace(".","")
 
 def get_timestamp():
 	'''
@@ -48,16 +48,28 @@ def build_request_url(consumer_key,consumer_secret,base_url,oauth_token="",
 	dic.update(extra_params)
 	signature = get_signature(get_base_string(base_url,dic,method),
 		consumer_secret+"&"+oauth_token_secret)
-	dic["oauth_sinature"]=signature
+	dic["oauth_signature"]=signature
 	url = base_url + "?" + urllib.urlencode(dic)
 	return url
 
 def request_token(consumer_key,consumer_secret):
 	url = build_request_url(consumer_key,consumer_secret,
 		"https://openapi.kuaipan.cn/open/requestToken")
-	print url
 	json_text = urllib.urlopen(url).read()
 	j = json.loads(json_text)
 	oauth_token = j["oauth_token"].encode("ascii")
 	oauth_token_secret = j["oauth_token_secret"].encode("ascii")
 	return (oauth_token,oauth_token_secret)
+
+def get_authorize_url(oauth_token):
+	return "https://www.kuaipan.cn/api.php?ac=open&op=authorise&oauth_token=%s"\
+	% oauth_token
+
+def request_access_token(consumer_key,consumer_secret,oauth_token,oauth_token_secret):
+    url = build_request_url( consumer_key, consumer_secret,
+                             "https://openapi.kuaipan.cn/open/accessToken",
+                              oauth_token, oauth_token_secret )
+    json_text = urllib.urlopen(url).read()
+    j = json.loads(json_text)
+    return ( j["oauth_token_secret"].encode("ascii"), j["oauth_token"].encode("ascii"), 
+             j["user_id"], j["charged_dir"].encode("ascii") )

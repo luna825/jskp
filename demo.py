@@ -37,6 +37,12 @@ if not (sys.stdout.encoding and sys.stdout.encoding.lower() == 'utf-8'):
 import webbrowser
 import kp_base_api
 import re
+import json
+#数据大小
+oneK = 1024
+oneM = oneK*oneK
+oneG = oneM*oneK
+oneT = oneG*oneK
 
 token_saved_to ="./authorized.data"
 
@@ -90,13 +96,19 @@ class kp_demo():
 		except:
 			print u"授权失败!"
 			raise
+	def get_account_info(self):
+		return kp_base_api.get_account_info(kp_demo.consumer_key,kp_demo.consumer_secret,self.oauth_token,self.oauth_token_secret)
+
 
 demo = kp_demo()
 if demo.is_authorized():
-	print demo.oauth_token
-	print demo.oauth_token_secret
-	print "已经授权!"
+	for i in range(1,len(sys.argv)):
+		if sys.argv[i] == "info" or sys.argv[i]=="":
+			json_info = demo.get_account_info()
+			#print "你好,你的快盘信息%s：\n总大小:11GB\n已用:11MB" % json_info["user_name"].encoding("UTF-8")
+			j = json.loads(json_info)
+			print u"你好%s，快盘信息：\n总大小：%dGB\n已用:%dMB\n" % (j["user_name"],j["quota_total"]/oneG,j["quota_used"]/oneM)
+		else:
+			print  u"第%d个参数错误！" % i
 else:
 	demo.authorized()
-
-

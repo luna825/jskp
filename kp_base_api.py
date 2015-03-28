@@ -73,3 +73,9 @@ def request_access_token(consumer_key,consumer_secret,oauth_token,oauth_token_se
     j = json.loads(json_text)
     return ( j["oauth_token_secret"].encode("ascii"), j["oauth_token"].encode("ascii"), 
              j["user_id"], j["charged_dir"].encode("ascii") )
+
+def get_account_info(consumer_key,consumer_secret,oauth_token,oauth_token_secret):
+	url = build_request_url(consumer_key,consumer_secret,
+		"http://openapi.kuaipan.cn/1/account_info",oauth_token,oauth_token_secret)
+	json_text = urllib.urlopen(url).read()
+	return json_text

@@ -49,7 +49,7 @@ token_saved_to ="./authorized.data"
 class kp_demo():
 	consumer_key = "xcSj3bB3qBBzfdew"
 	consumer_secret = "rgFU71RflLetSobJ"
-	root = u"金山快盘python"
+	root = "app_folder"
 
 	def __init__(self):
 		self.oauth_token=""
@@ -98,17 +98,25 @@ class kp_demo():
 			raise
 	def get_account_info(self):
 		return kp_base_api.get_account_info(kp_demo.consumer_key,kp_demo.consumer_secret,self.oauth_token,self.oauth_token_secret)
+	def get_metadata(self,path):
+		return kp_base_api.get_metadata(kp_demo.consumer_key,kp_demo.consumer_secret,self.oauth_token,self.oauth_token_secret,kp_demo.root,path)
 
 
 demo = kp_demo()
 if demo.is_authorized():
-	for i in range(1,len(sys.argv)):
-		if sys.argv[i] == "info" or sys.argv[i]=="":
-			json_info = demo.get_account_info()
-			#print "你好,你的快盘信息%s：\n总大小:11GB\n已用:11MB" % json_info["user_name"].encoding("UTF-8")
-			j = json.loads(json_info)
-			print u"你好%s，快盘信息：\n总大小：%dGB\n已用:%dMB\n" % (j["user_name"],j["quota_total"]/oneG,j["quota_used"]/oneM)
+	if sys.argv[1] == "info":
+		json_info = demo.get_account_info()
+		#print "你好,你的快盘信息%s：\n总大小:11GB\n已用:11MB" % json_info["user_name"].encoding("UTF-8")
+		j = json.loads(json_info)
+		print u"你好%s，快盘信息：\n总大小：%dGB\n已用:%dMB" % (j["user_name"],j["quota_total"]/oneG,j["quota_used"]/oneM)
+	elif sys.argv[1] == "list" :
+		if len(sys.argv) > 2:
+			path = sys.argv[2]
 		else:
-			print  u"第%d个参数错误！" % i
+			path = "\\"
+		json_info = demo.get_metadata(path)
+		print json_info
+	else:
+		print  "help"
 else:
 	demo.authorized()

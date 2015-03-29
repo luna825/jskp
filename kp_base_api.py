@@ -79,3 +79,12 @@ def get_account_info(consumer_key,consumer_secret,oauth_token,oauth_token_secret
 		"http://openapi.kuaipan.cn/1/account_info",oauth_token,oauth_token_secret)
 	json_text = urllib.urlopen(url).read()
 	return json_text
+
+def get_metadata(consumer_key,consumer_secret,oauth_token,oauth_token_secret,root,path):
+	if len(path)>0 and (path[0]=='\\' or path =='/'):
+		path = path[1:]
+	url = build_request_url(consumer_key,consumer_secret,
+		"http://openapi.kuaipan.cn/1/metadata/%s/%s" % (root,path),
+		oauth_token,oauth_token_secret)
+	json_text = urllib.urlopen(url).read()
+	return json_text
